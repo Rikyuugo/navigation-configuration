@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<launch>
+  <include file="$(find nav_manage)/launch/$(env HLHPLIDAR).launch"/>
+  <include file="$(find nav_manage)/launch/amcl.launch"/>
+  <arg name="map_file" default="$(env MAP_FILES_PATH)2022114.yaml"/>
+  <node args="$(arg map_file)" pkg="map_server" name="map_server" type="map_server"/>
+  <node output="screen" pkg="move_base" clear_params="true" respawn="false" name="move_base" type="move_base">
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_costmap_common_params.yaml" ns="global_costmap" command="load"/>
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_costmap_common_params.yaml" ns="local_costmap" command="load"/>
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_local_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_global_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_base_local_planner_params.yaml" command="load"/>
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_global_planner_params.yaml" command="load"/>
+    <rosparam file="$(find nav_manage)/param/navigation/$(env VERSION)_move_base_params.yaml" command="load"/>
+  </node>
+  <node pkg="robot_pose_publisher" name="robot_pose_publisher" type="robot_pose_publisher"/>
+  <node pkg="multigoalplan" name="sort_target_points_server" type="multigoalplanserver"/>
+  <node pkg="receive_send_goal" name="receive_and_send_goal" type="receive_upper_goal_send"/>
+  <node pkg="simple_navigation_goals" name="receive_goals" type="goal_rec"/>
+  <node pkg="simple_navigation_goals" name="simple_navigation_goals" type="send_goal"/>
+  <node pkg="pub_robot_pose" name="pub_robot_pose" type="pub_robot_pose"/>
+</launch>
